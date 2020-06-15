@@ -1,10 +1,9 @@
 package br.com.pipa.studios.scoreuser.controller;
 
 
-import br.com.pipa.studios.scoreuser.domain.ScoreUser;
 import br.com.pipa.studios.scoreuser.domain.dto.request.ScoreUserRequestDTO;
 import br.com.pipa.studios.scoreuser.domain.dto.response.ScoreUserResponseDTO;
-import br.com.pipa.studios.scoreuser.service.ScoreUserService;
+import br.com.pipa.studios.scoreuser.service.ScoreService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -19,7 +18,7 @@ import java.util.List;
 public class ScoreUserController {
 
     @Autowired
-    private ScoreUserService scoreUserService;
+    private ScoreService scoreUserService;
 
     @ApiOperation(value = "This method can be called several times per user and not return anything. The points should be added to the user’s current score (score = current score + new points).")
     @ApiResponses(value = {
@@ -31,11 +30,7 @@ public class ScoreUserController {
         if(scoreUserRequestDTO.getUserId() == null || scoreUserRequestDTO.getPoints() == null){
             return ResponseEntity.badRequest().build();
         }
-        ScoreUser scoreUser = ScoreUser.builder()
-                .points(scoreUserRequestDTO.getPoints())
-                .userId(scoreUserRequestDTO.getUserId())
-                .build();
-        scoreUserService.save(scoreUser);
+        scoreUserService.save(scoreUserRequestDTO);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -46,12 +41,12 @@ public class ScoreUserController {
             @ApiResponse(code = 500, message = "Exception"),
     })
     @GetMapping("/{userId}/position")
+    @PutMapping()
     public ResponseEntity<ScoreUserResponseDTO> getUser(@PathVariable Long userId) {
         if(userId == null){
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(scoreUserService.getPositionScoreList(userId)
-                .orElse(null));
+        return ResponseEntity.ok(scoreUserService.getPositionScoreList(userId));
     }
 
     @ApiOperation(value = "Retrieves the high scores list, in order, limited to the 20000 higher scores. A request for a high score list without any scores submitted shall be an empty list.")

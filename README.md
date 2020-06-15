@@ -3,32 +3,33 @@
  HTTP-based mini game back-end in Java which registers score points for different users, 
  with the capability to return the current user position and high score list. 
 
-
 # Getting Started
 
 ### Prerequisites
 
 Java 8 
 Maven 
-Docker
-Redis 
 
 ### Choices
 
-I choice the redis cache for optimize this project. 
+I redid the test without using a Redis cache, instead of a cache, I used the map.
 
-Redis is an in-memory data structure project implementing a distributed, in-memory key-value database with optional durability. Redis supports different kinds of abstract data structures, such as strings, lists, maps, sets, sorted sets, HyperLogLogs, bitmaps, streams, and spatial indexes.
+ConcurrentMap introduced in Java in version 1.5, it is a high-performance, thread-safety map.
 
-## Docker
+With this decision I can get: thread-safety with high throughput under high concurrency
 
-Enter in root directory this project and execute this comand
+Knowing that my performance tests are merely superficial and do not serve as an advanced basis for stress testing,
+I would like to share the results obtained
+When performing 1 insertion via API where a for has inserted 21k players on the map, I obtained response time
+300ms, when saving only 1 item it was 9ms the response time
 
-```
-$ docker-compose up
-```
+Bearing in mind that the biggest difficulty of performance will be to seek both highscore and getPosition
+I obtained values of 150 ms for 20k high score saved, fetched via API GET
 
-After run, this Redis is already 
+and 39 ms to search for the player's position, on a map with 21,000 records.
 
+For this solution I used DDD (Domain Driven Design) 
+and developed based on TDD
 
 ### Installing
 
@@ -58,13 +59,11 @@ For further reference, please consider the following sections:
 * [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.3.0.RELEASE/maven-plugin/reference/html/)
 * [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.3.0.RELEASE/maven-plugin/reference/html/#build-image)
 * [Spring Boot DevTools](https://docs.spring.io/spring-boot/docs/2.3.0.RELEASE/reference/htmlsingle/#using-boot-devtools)
-* [Spring Data Redis (Access+Driver)](https://docs.spring.io/spring-boot/docs/2.3.0.RELEASE/reference/htmlsingle/#boot-features-redis)
 * [Spring Web](https://docs.spring.io/spring-boot/docs/2.3.0.RELEASE/reference/htmlsingle/#boot-features-developing-web-applications)
 
 ### Guides
 The following guides illustrate how to use some features concretely:
 
-* [Messaging with Redis](https://spring.io/guides/gs/messaging-redis/)
 * [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
 * [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
 * [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
